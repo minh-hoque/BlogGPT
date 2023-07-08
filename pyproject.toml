@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "bloggpt"
+version = "0.1.0"
+description = "This is an AI application that generates a blog using a given outline. It utilizes an LLM agent to do research and write a draft. Then uses a final LLM to rewrite the blog into a final draft."
+authors = ["Minhajul Hoque <minh.hoque@clarifai.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+langchain = "^0.0.227"
+beautifulsoup4 = "^4.12.2"
+chardet = "^5.1.0"
+google-api-python-client = "^2.92.0"
+openai = "^0.27.8"
+pinecone-client = "^2.2.2"
+pprintpp = "^0.4.0"
+python-dotenv = "^1.0.0"
+pypdf2 = "^3.0.1"
+streamlit = "^1.24.1"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+isort = "^5.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

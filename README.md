@@ -1,0 +1,2 @@
+# BlogGPT
+This is an AI application that generates a blog using a given outline. It utilizes an LLM agent to do research and write a draft. Then uses a final LLM to rewrite the blog into a final draft.
