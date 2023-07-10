@@ -2,6 +2,7 @@
 
 import os
 from pprint import pprint
+import streamlit as st
 from dotenv import load_dotenv
 from langchain.agents import AgentType, Tool, initialize_agent
 from langchain.chains import LLMChain
@@ -22,29 +23,30 @@ from utils.main_utils import (
     combine_drafts,
 )
 from utils.web_utils import search_and_summarize_web_url
-from utils.logging_utils import CustomFormatter
+from utils.logging_utils import CustomFormatter, StreamlitHandler, logger
 
 import logging
 
 # Load environment variables from .env file
 load_dotenv(".")
 
-# Create a console handler with the custom formatter
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(
-    CustomFormatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="%H:%M")
-)
+# # Create a console handler with the custom formatter
+# console_handler = logging.StreamHandler()
+# console_handler.setFormatter(
+#     CustomFormatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="%H:%M")
+# )
 
-# Get the log level from the environment variable (default to 'INFO' if it's not set)
-log_level = os.getenv("LOG_LEVEL", "INFO")
+# # Get the log level from the environment variable (default to 'INFO' if it's not set)
+# log_level = os.getenv("LOG_LEVEL", "INFO")
 
-# Set the logging level based on the value of the environment variable
-level = logging.INFO if log_level == "INFO" else logging.DEBUG
+# # Set the logging level based on the value of the environment variable
+# level = logging.INFO if log_level == "INFO" else logging.DEBUG
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+# logger.addHandler(StreamlitHandler())
 
-# Configure the root logger
-logging.basicConfig(level=level, handlers=[console_handler], datefmt="%H:%M")
+# # Configure the root logger
+# logging.basicConfig(level=level, handlers=[console_handler], datefmt="%H:%M")
 
 # Use the environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -79,28 +81,33 @@ def main():
     logger.info(f"Topic: {topic}")
 
     context = search_and_summarize_web_url(topic)
+
+    with st.expander("Search Results For: {topic}"):
+        st.write(context)
+
     headers, blog_sections = split_outline_prompt(OUTLINE_PROMPT)
 
     num_generated = 0
     for header, blog_section in zip(headers, blog_sections):
-        GENERATE_BLOG_SECTION_PROMPT = BLOG_SECTION_AGENT_SYSTEM_PROMPT.format(
-            TOPIC_PROMPT=TOPIC_PROMPT,
-            BLOG_SECTION_OUTLINE_PROMPT=blog_section,
-            CONTEXT=context,
-        )
+        with st.expander("Blog Section: {header}"):
+            GENERATE_BLOG_SECTION_PROMPT = BLOG_SECTION_AGENT_SYSTEM_PROMPT.format(
+                TOPIC_PROMPT=TOPIC_PROMPT,
+                BLOG_SECTION_OUTLINE_PROMPT=blog_section,
+                CONTEXT=context,
+            )
 
-        pprint(GENERATE_BLOG_SECTION_PROMPT)
+            logger.debug(GENERATE_BLOG_SECTION_PROMPT)
 
-        # Generate the blog with the agent
-        logger.info(f"Generating Blog Section: {header}")
-        generated_blog = blog_agent.run(GENERATE_BLOG_SECTION_PROMPT)
-        print(generated_blog)
+            # Generate the blog with the agent
+            logger.info(f"Generating Blog Section: {header}")
+            generated_blog = blog_agent.run(GENERATE_BLOG_SECTION_PROMPT)
+            st.write(generated_blog)
 
-        # Save the blog in a markdown file
-        with open(f"outputs/draft_{num_generated}.md", "w") as f:
-            f.write(generated_blog)
+            # Save the blog in a markdown file
+            with open(f"outputs/draft_{num_generated}.md", "w") as f:
+                f.write(generated_blog)
 
-        num_generated += 1
+            num_generated += 1
 
     # Combine the markdown generated blogs into one
     logger.info("Combining the markdown generated blogs into one")
@@ -108,8 +115,11 @@ def main():
 
     # Refine the generated blog
     logger.info("Generating Final Blog")
-    generate_final_blog(entire_draft, TOPIC_PROMPT, OPENAI_API_KEY)
+    final_blog = generate_final_blog(entire_draft, TOPIC_PROMPT, OPENAI_API_KEY)
     logger.info("Done!")
+
+    with st.expander("Final Blog"):
+        st.write(final_blog)
 
 
 if __name__ == "__main__":

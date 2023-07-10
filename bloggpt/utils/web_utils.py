@@ -18,8 +18,9 @@ from langchain.tools import tool
 from utils.main_utils import summarize_text
 
 import logging
+from utils.logging_utils import CustomFormatter, StreamlitHandler, logger
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
 load_dotenv()

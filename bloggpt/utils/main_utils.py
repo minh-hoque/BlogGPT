@@ -5,10 +5,10 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 
 from prompts.prompts import REWRITE_PROMPT, SUMMARIZE_PROMPT
-
+from utils.logging_utils import CustomFormatter, StreamlitHandler, logger
 import logging
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 # Load environment variables from .env file
@@ -76,6 +76,8 @@ def generate_final_blog(entire_draft, TOPIC_PROMPT, OPENAI_API_KEY):
     # Save the blog in a markdown file
     with open("outputs/blog.md", "w") as f:
         f.write(final_blog["text"])
+
+    return final_blog["text"]
 
 
 def split_outline_prompt(OUTLINE_PROMPT):
