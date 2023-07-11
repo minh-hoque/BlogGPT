@@ -3,9 +3,9 @@
 import logging
 import os
 import sys
+import traceback
 from pprint import pprint
 from typing import List, Optional
-import traceback
 
 import streamlit as st
 from ansi2html import Ansi2HTMLConverter
@@ -19,6 +19,7 @@ from prompts.prompts import (
     REWRITE_PROMPT,
     TOPIC_PROMPT,
 )
+from utils.logging_utils import StreamlitPrint
 from utils.main_utils import (
     bprint,
     combine_drafts,
@@ -28,7 +29,6 @@ from utils.main_utils import (
     split_outline_prompt,
 )
 from utils.web_utils import search_and_summarize_web_url
-from utils.logging_utils import StreamlitPrint
 
 # conv = Ansi2HTMLConverter()
 

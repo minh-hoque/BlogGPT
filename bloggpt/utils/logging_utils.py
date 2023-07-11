@@ -1,8 +1,8 @@
 import logging
 import os
 
-from ansi2html import Ansi2HTMLConverter
 import streamlit as st
+from ansi2html import Ansi2HTMLConverter
 from dotenv import load_dotenv
 
 # Load environment variables from .env file

@@ -14,8 +14,12 @@ from langchain.prompts import PromptTemplate
 from langchain.text_splitter import TokenTextSplitter
 from langchain.vectorstores import Pinecone
 
-from prompts.prompts import (OUTLINE_PROMPT, RECURRENT_RQNA_SYSTEM_PROMPT,
-                             REWRITE_PROMPT, TOPIC_PROMPT)
+from prompts.prompts import (
+    OUTLINE_PROMPT,
+    RECURRENT_RQNA_SYSTEM_PROMPT,
+    REWRITE_PROMPT,
+    TOPIC_PROMPT,
+)
 from utils.main_utils import bprint, generate_final_blog, gprint, rprint
 from utils.web_utils import search_and_extract_web_url
 
