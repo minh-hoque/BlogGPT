@@ -2,7 +2,6 @@ import streamlit as st
 
 from bloggpt import main
 
-
 # Initialize state variables
 if "topic" not in st.session_state:
     st.session_state.topic = None
@@ -42,4 +41,4 @@ if st.session_state.topic and st.session_state.outline:
         st.write(f"# {st.session_state.topic}")
         st.write(st.session_state.outline)
 
-    main(topic_str, blog_outline)
+    main(topic_str=topic_str, blog_outline=blog_outline)

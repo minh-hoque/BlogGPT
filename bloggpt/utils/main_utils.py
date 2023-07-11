@@ -1,11 +1,13 @@
+import logging
 import os
+
+import streamlit as st
 from dotenv import load_dotenv
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 
 from prompts.prompts import REWRITE_PROMPT, SUMMARIZE_PROMPT
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -66,7 +68,6 @@ def generate_final_blog(entire_draft, TOPIC_PROMPT, OPENAI_API_KEY):
         inputs={"generated_blog": entire_draft, "TOPIC_PROMPT": TOPIC_PROMPT},
         return_only_outputs=True,
     )
-    print(final_blog["text"])
 
     # Save the blog in a markdown file
     with open("outputs/blog.md", "w") as f:
@@ -90,7 +91,7 @@ def split_outline_prompt(OUTLINE_PROMPT):
     for text in OUTLINE_PROMPT.split("\n"):
         if text.startswith("#"):
             headers.append(text.split("#")[1].strip())
-    # logging.debug("headers: ", headers)
+    logging.debug("headers: ", headers)
 
     blog_sections = OUTLINE_PROMPT.split("\n\n")
 
@@ -163,8 +164,8 @@ def summarize_text(text: str) -> str:
     try:
         summary = summarize_chain.run(text)
     except Exception as e:
-        rprint(e)
-        rprint(f"Number of words: {len(text.split())}")
+        st.error(e)
+        st.error(f"Number of words: {len(text.split())}")
         return None
 
     return summary

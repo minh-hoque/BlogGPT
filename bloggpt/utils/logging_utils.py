@@ -1,24 +1,25 @@
 import logging
-import streamlit as st
 import os
+
+import streamlit as st
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
 import sys
+
 import streamlit as st
 
+# class StreamlitPrint:
+#     def write(self, s):
+#         st.write(s)
 
-class StreamlitPrint:
-    def write(self, s):
-        st.write(s)
-
-    def flush(self):
-        pass
+#     def flush(self):
+#         pass
 
 
-sys.stdout = StreamlitPrint()
+# sys.stdout = StreamlitPrint()
 
 
 # Define the colors

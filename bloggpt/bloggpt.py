@@ -1,33 +1,21 @@
 # Purpose: Run the bloggpt agent
 
+import logging
 import os
+import sys
 from pprint import pprint
+
 import streamlit as st
-from dotenv import load_dotenv
 from ansi2html import Ansi2HTMLConverter
+from dotenv import load_dotenv
 from langchain.agents import AgentType, Tool, initialize_agent
 from langchain.chat_models import ChatOpenAI
 
-
-from prompts.prompts import (
-    OUTLINE_PROMPT,
-    REWRITE_PROMPT,
-    BLOG_SECTION_AGENT_SYSTEM_PROMPT,
-    TOPIC_PROMPT,
-)
-from utils.main_utils import (
-    rprint,
-    bprint,
-    gprint,
-    generate_final_blog,
-    split_outline_prompt,
-    combine_drafts,
-)
+from prompts.prompts import (BLOG_SECTION_AGENT_SYSTEM_PROMPT, OUTLINE_PROMPT,
+                             REWRITE_PROMPT, TOPIC_PROMPT)
+from utils.main_utils import (bprint, combine_drafts, generate_final_blog,
+                              gprint, rprint, split_outline_prompt)
 from utils.web_utils import search_and_summarize_web_url
-
-
-import sys
-import streamlit as st
 
 conv = Ansi2HTMLConverter()
 
@@ -50,23 +38,6 @@ sys.stdout = StreamlitPrint()
 # Load environment variables from .env file
 load_dotenv(".")
 
-# # Create a console handler with the custom formatter
-# console_handler = logging.StreamHandler()
-# console_handler.setFormatter(
-#     CustomFormatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="%H:%M")
-# )
-
-# # Get the log level from the environment variable (default to 'INFO' if it's not set)
-# log_level = os.getenv("LOG_LEVEL", "INFO")
-
-# # Set the logging level based on the value of the environment variable
-# level = logging.INFO if log_level == "INFO" else logging.DEBUG
-
-# logger = logging.getLogger(__name__)
-# logger.addHandler(StreamlitHandler())
-
-# # Configure the root logger
-# logging.basicConfig(level=level, handlers=[console_handler], datefmt="%H:%M")
 
 # Use the environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -114,7 +85,7 @@ def main(topic_str, blog_outline):
                 CONTEXT=context,
             )
 
-            # logger.debug(GENERATE_BLOG_SECTION_PROMPT)
+            logging.debug(GENERATE_BLOG_SECTION_PROMPT)
 
             # Generate the blog with the agent
             rprint(f"Generating Blog Section: {header}")

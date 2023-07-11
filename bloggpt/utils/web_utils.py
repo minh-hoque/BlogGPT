@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from io import BytesIO
@@ -6,6 +7,7 @@ from pprint import pprint
 import chardet
 import PyPDF2
 import requests
+import streamlit as st
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
@@ -15,10 +17,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.tools import tool
 
-from utils.main_utils import summarize_text, rprint, bprint, gprint
-
-import logging
-
+from utils.main_utils import bprint, gprint, rprint, summarize_text
 
 # Load environment variables from .env file
 load_dotenv()
@@ -148,13 +147,13 @@ def get_website_summary(url):
         # Check if the request was successful
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        rprint(f"HTTP error occurred for {url}: {err}... Skipping")
+        st.error(f"HTTP error occurred for {url}: {err}... Skipping")
         return None
     except requests.exceptions.RequestException as err:
-        rprint(f"Error occurred for {url}: {err}... Skipping")
+        st.error(f"Error occurred for {url}: {err}... Skipping")
         return None
 
-    # logger.debug("headers['Content-Type']: ", response.headers["Content-Type"])
+    logging.debug("headers['Content-Type']: ", response.headers["Content-Type"])
 
     # Check the Content-Type of the response
     if "application/pdf" in response.headers["Content-Type"]:
@@ -165,8 +164,8 @@ def get_website_summary(url):
         # Detect the encoding of the response content
         encoding = chardet.detect(response.content)["encoding"]
 
-        # logger.debug("url: ", url)
-        # logger.debug("encoding: ", encoding)
+        logging.debug("url: ", url)
+        logging.debug("encoding: ", encoding)
 
         # Decode the content using the detected encoding
         if encoding is None:
