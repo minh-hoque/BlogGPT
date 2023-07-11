@@ -4,7 +4,8 @@ import logging
 import os
 import sys
 from pprint import pprint
-from typing import Optional
+from typing import List, Optional
+import traceback
 
 import streamlit as st
 from ansi2html import Ansi2HTMLConverter
@@ -27,21 +28,22 @@ from utils.main_utils import (
     split_outline_prompt,
 )
 from utils.web_utils import search_and_summarize_web_url
+from utils.logging_utils import StreamlitPrint
 
-conv = Ansi2HTMLConverter()
+# conv = Ansi2HTMLConverter()
 
 
-class StreamlitPrint:
-    def write(self, s):
-        # Check if html span
-        if s.startswith("<span"):
-            st.markdown(s, unsafe_allow_html=True)
-        else:
-            html_text = conv.convert(s, full=False)
-            st.markdown(html_text, unsafe_allow_html=True)
+# class StreamlitPrint:
+#     def write(self, s):
+#         # Check if html span
+#         if s.startswith("<span"):
+#             st.markdown(s, unsafe_allow_html=True)
+#         else:
+#             html_text = conv.convert(s, full=False)
+#             st.markdown(html_text, unsafe_allow_html=True)
 
-    def flush(self):
-        pass
+#     def flush(self):
+#         pass
 
 
 sys.stdout = StreamlitPrint()
@@ -70,7 +72,7 @@ blog_agent = initialize_agent(
 )
 
 
-def get_search_context(topic: str) -> Optional[str]:
+def get_topic_context(topic: str) -> Optional[str]:
     """
     Get the search context for a given topic from the web.
 
@@ -87,7 +89,8 @@ def get_search_context(topic: str) -> Optional[str]:
             st.write(context)
         except Exception as e:
             st.error(f"Error occurred while searching for {topic}: {e}")
-            context = None
+            st.error(traceback.format_exc())
+            raise e
     st.divider()
     return context
 
@@ -119,6 +122,7 @@ def generate_blog_section(
             generated_blog = blog_agent.run(GENERATE_BLOG_SECTION_PROMPT)
     except Exception as e:
         st.error(f"Error occurred while generating blog section {header}: {e}")
+        st.error(traceback.format_exc())
         generated_blog = None
     return generated_blog
 
@@ -142,6 +146,7 @@ def save_blog_section(generated_blog: str, header: str, num_generated: int) -> N
             f.write(generated_blog)
     except Exception as e:
         st.error(f"Error occurred while saving blog section {header}: {e}")
+        st.error(traceback.format_exc())
     st.divider()
 
 
@@ -170,8 +175,10 @@ def combine_and_finalize_draft(generated_blogs: List[str]) -> None:
             st.write(final_blog)
     except Exception as e:
         logging.error(f"Error occurred while finalizing blog: {e}")
+        st.error(traceback.format_exc())
 
 
+@st.cache_data()
 def run_bloggpt(topic_str: str, blog_outline: str) -> None:
     """
     Run bloggpt to generate a blog from provided topic and blog outline.
@@ -182,13 +189,15 @@ def run_bloggpt(topic_str: str, blog_outline: str) -> None:
         None.
     """
     topic = topic_str.split(":")[1].strip()
-    context = get_search_context(topic)
+    context = get_topic_context(topic)
     headers, blog_sections = split_outline_prompt(blog_outline)
     generated_blogs = []
     for num_generated, (header, blog_section) in enumerate(zip(headers, blog_sections)):
         generated_blog = generate_blog_section(header, blog_section, context)
         if generated_blog is not None:
             generated_blogs.append(generated_blog)
+            with st.expander(f"Blog Section: {header}"):
+                st.write(generated_blog)
             # save_blog_section(generated_blog, header, num_generated)
     combine_and_finalize_draft(generated_blogs)
 
