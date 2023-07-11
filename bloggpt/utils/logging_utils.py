@@ -1,6 +1,7 @@
 import logging
 import os
 
+from ansi2html import Ansi2HTMLConverter
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -11,15 +12,20 @@ import sys
 
 import streamlit as st
 
-# class StreamlitPrint:
-#     def write(self, s):
-#         st.write(s)
-
-#     def flush(self):
-#         pass
+conv = Ansi2HTMLConverter()
 
 
-# sys.stdout = StreamlitPrint()
+class StreamlitPrint:
+    def write(self, s):
+        # Check if html span
+        if s.startswith("<span"):
+            st.markdown(s, unsafe_allow_html=True)
+        else:
+            html_text = conv.convert(s, full=False)
+            st.markdown(html_text, unsafe_allow_html=True)
+
+    def flush(self):
+        pass
 
 
 # Define the colors
