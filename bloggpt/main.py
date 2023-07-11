@@ -1,3 +1,5 @@
+import traceback
+
 import streamlit as st
 
 from bloggpt import run_bloggpt
@@ -67,6 +69,7 @@ def display_blog_outline():
             )
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
+            st.error(traceback.format_exc())
 
 
 # Initialize session state

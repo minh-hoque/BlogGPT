@@ -30,22 +30,6 @@ from utils.main_utils import (
 )
 from utils.web_utils import search_and_summarize_web_url
 
-# conv = Ansi2HTMLConverter()
-
-
-# class StreamlitPrint:
-#     def write(self, s):
-#         # Check if html span
-#         if s.startswith("<span"):
-#             st.markdown(s, unsafe_allow_html=True)
-#         else:
-#             html_text = conv.convert(s, full=False)
-#             st.markdown(html_text, unsafe_allow_html=True)
-
-#     def flush(self):
-#         pass
-
-
 sys.stdout = StreamlitPrint()
 
 # Load environment variables from .env file
