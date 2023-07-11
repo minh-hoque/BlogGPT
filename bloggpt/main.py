@@ -11,31 +11,35 @@ if "outline" not in st.session_state:
 
 with st.form("my_form"):
     topic_str = st.text_input("Topic:")
+    topic_str = "Topic: " + topic_str
 
     default_text = """# Header 1
-Description of this blog section
+Description of this blog section. Describe important aspects of this blog section.
+Search for: (keywords)
     
 # Header 2
-Description of this blog section
+Description of this blog section. Describe important aspects of this blog section.
+Search for: (keywords)
     
 # Header 3
-Description of this blog section
+Description of this blog section. Describe important aspects of this blog section.
+Search for: (keywords)
     """
-    st.text_area("Inside the form", value=default_text, height=200)
+
+    blog_outline = st.text_area(
+        "Define the blog outline", value=default_text, height=400
+    )
 
     # Every form must have a submit button.
     submitted = st.form_submit_button("Generate Blog")
     if submitted:
         # Store in state variables
         st.session_state.topic = topic_str
-        st.session_state.outline = default_text
-    print("submitted: ", submitted)
+        st.session_state.outline = blog_outline
 
 if st.session_state.topic and st.session_state.outline:
-    st.write("Generating Blog")
-    st.write(st.session_state.topic)
-    st.write(st.session_state.outline)
+    with st.expander("Blog Outline"):
+        st.write(f"# {st.session_state.topic}")
+        st.write(st.session_state.outline)
 
-    with st.expander("LLM Agent Output"):
-        main()
-        # st.code(main())
+    main(topic_str, blog_outline)

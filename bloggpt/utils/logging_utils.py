@@ -1,6 +1,24 @@
 import logging
 import streamlit as st
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+import sys
+import streamlit as st
+
+
+class StreamlitPrint:
+    def write(self, s):
+        st.write(s)
+
+    def flush(self):
+        pass
+
+
+sys.stdout = StreamlitPrint()
 
 
 # Define the colors
@@ -32,23 +50,23 @@ class CustomFormatter(logging.Formatter):
 class StreamlitHandler(logging.Handler):
     def emit(self, record):
         log_entry = self.format(record)
-        st.code(log_entry)
+        st.write(log_entry)
 
 
-# Create a console handler with the custom formatter
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(
-    CustomFormatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="%H:%M")
-)
+# # Create a console handler with the custom formatter
+# console_handler = logging.StreamHandler()
+# console_handler.setFormatter(
+#     CustomFormatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="%H:%M")
+# )
 
-# Get the log level from the environment variable (default to 'INFO' if it's not set)
-log_level = os.getenv("LOG_LEVEL", "INFO")
+# # Get the log level from the environment variable (default to 'INFO' if it's not set)
+# log_level = os.getenv("LOG_LEVEL", "INFO")
 
-# Set the logging level based on the value of the environment variable
-level = logging.INFO if log_level == "INFO" else logging.DEBUG
+# # Set the logging level based on the value of the environment variable
+# level = logging.INFO if log_level == "INFO" else logging.DEBUG
 
-logger = logging.getLogger(__name__)
-logger.addHandler(StreamlitHandler())
+# logger = logging.getLogger(__name__)
+# logger.addHandler(StreamlitHandler())
 
-# Configure the root logger
-logging.basicConfig(level=level, handlers=[console_handler], datefmt="%H:%M")
+# # Configure the root logger
+# logging.basicConfig(level=level, handlers=[console_handler], datefmt="%H:%M")

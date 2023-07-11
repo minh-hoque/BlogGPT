@@ -5,10 +5,6 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 
 from prompts.prompts import REWRITE_PROMPT, SUMMARIZE_PROMPT
-from utils.logging_utils import CustomFormatter, StreamlitHandler, logger
-import logging
-
-# logger = logging.getLogger(__name__)
 
 
 # Load environment variables from .env file
@@ -16,7 +12,6 @@ load_dotenv()
 
 # Use the environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-print("OPENAI_API_KEY: ", OPENAI_API_KEY)
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GOOGLE_CONTEXT_ID = os.getenv("GOOGLE_CSE_ID")
 PINECONE_ENV = os.getenv("PINECONE_ENV")
@@ -27,7 +22,7 @@ def rprint(text):
 
     :param text: the text to print
     """
-    logger.info("\033[1;31m" + f"{text}" + "\033[0m")
+    print(f"<span style='color:red'>{text}</span>")
 
 
 def bprint(text):
@@ -35,7 +30,7 @@ def bprint(text):
 
     :param text: the text to print
     """
-    logger.info("\033[94m" + text + "\033[0m")
+    print(f"<span style='color:blue'>{text}</span>")
 
 
 def gprint(text):
@@ -43,7 +38,7 @@ def gprint(text):
 
     :param text: the text to print
     """
-    logger.info("\033[92m" + text + "\033[0m")
+    print(f"<span style='color:green'>{text}</span>")
 
 
 def generate_final_blog(entire_draft, TOPIC_PROMPT, OPENAI_API_KEY):
@@ -95,7 +90,7 @@ def split_outline_prompt(OUTLINE_PROMPT):
     for text in OUTLINE_PROMPT.split("\n"):
         if text.startswith("#"):
             headers.append(text.split("#")[1].strip())
-    logging.debug("headers: ", headers)
+    # logging.debug("headers: ", headers)
 
     blog_sections = OUTLINE_PROMPT.split("\n\n")
 
@@ -145,7 +140,7 @@ def combine_drafts(directory):
                 outfile.write("\n\n")
                 entire_draft += "\n\n"
 
-    logging.info(f"All drafts have been combined into {output_file}.")
+    gprint(f"All drafts have been combined into {output_file}.")
     return entire_draft
 
 
@@ -161,15 +156,15 @@ def summarize_text(text: str) -> str:
 
     # Truncate text if larger than 12500 words
     if len(text.split()) > 12000:
-        logger.info("Truncating text to 12500 words")
+        rprint("Truncating text to 12500 words")
         text = " ".join(text.split()[:12000])
 
     # Summarize the text
     try:
         summary = summarize_chain.run(text)
     except Exception as e:
-        logger.warning(e)
-        logger.warning(f"Number of words: {len(text.split())}")
+        rprint(e)
+        rprint(f"Number of words: {len(text.split())}")
         return None
 
     return summary

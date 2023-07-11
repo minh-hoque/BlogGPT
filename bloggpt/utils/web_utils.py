@@ -15,12 +15,10 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.tools import tool
 
-from utils.main_utils import summarize_text
+from utils.main_utils import summarize_text, rprint, bprint, gprint
 
 import logging
-from utils.logging_utils import CustomFormatter, StreamlitHandler, logger
 
-# logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -62,15 +60,15 @@ def get_pdf_text(url):
     str: The text content of the PDF file.
     """
     try:
-        logger.info(f"Fetching content from {url}")
+        bprint(f"Fetching content from {url}")
         response = requests.get(url)
         # Check if the request was successful
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        logger.warning(f"HTTP error occurred for {url}: {err}")
+        # logger.warning(f"HTTP error occurred for {url}: {err}")
         return None
     except requests.exceptions.RequestException as err:
-        logger.warning(f"Error occurred for {url}: {err}")
+        # logger.warning(f"Error occurred for {url}: {err}")
         return None
 
     # Open the PDF file
@@ -80,7 +78,6 @@ def get_pdf_text(url):
     # Extract the text from each page of the PDF
     text = ""
     for page in pdf.pages:
-        # page = pdf.getPage(page_num)
         text += page.extract_text((0, 90))
 
     return text
@@ -146,18 +143,19 @@ def get_website_summary(url):
     str: The summary content of the webpage.
     """
     try:
-        logger.info(f"Fetching content from {url}")
+        bprint(f"Fetching content from {url}")
         response = requests.get(url)
         # Check if the request was successful
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        logger.warning(f"HTTP error occurred for {url}: {err}... Skipping")
+        rprint(f"HTTP error occurred for {url}: {err}... Skipping")
         return None
     except requests.exceptions.RequestException as err:
-        logger.warning(f"Error occurred for {url}: {err}... Skipping")
+        rprint(f"Error occurred for {url}: {err}... Skipping")
         return None
 
-    logger.debug("headers['Content-Type']: ", response.headers["Content-Type"])
+    # logger.debug("headers['Content-Type']: ", response.headers["Content-Type"])
+
     # Check the Content-Type of the response
     if "application/pdf" in response.headers["Content-Type"]:
         # The URL points to a PDF file
@@ -167,8 +165,8 @@ def get_website_summary(url):
         # Detect the encoding of the response content
         encoding = chardet.detect(response.content)["encoding"]
 
-        logger.debug("url: ", url)
-        logger.debug("encoding: ", encoding)
+        # logger.debug("url: ", url)
+        # logger.debug("encoding: ", encoding)
 
         # Decode the content using the detected encoding
         if encoding is None:
@@ -204,8 +202,7 @@ def search_google(query, api_key, cx_id, start_index, num_results=10):
     Returns:
     list: A list of URLs from the Google search.
     """
-    print()
-    logger.info(f"Searching Google for {query}")
+    bprint(f"Searching Google for {query}")
     service = build("customsearch", "v1", developerKey=api_key)
     res = (
         service.cse()
@@ -253,7 +250,7 @@ def search_and_extract_web_url(query: str) -> str:
 def search_and_summarize_web_url(query: str) -> str:
     """Searches the web for the query and extracts relevant texts."""
 
-    num_results = 8
+    num_results = 4
     successful_extractions = 0
     start_index = 1
     # Initialize an empty string to store the entire extracted texts
@@ -263,20 +260,20 @@ def search_and_summarize_web_url(query: str) -> str:
             query, GOOGLE_API_KEY, GOOGLE_CONTEXT_ID, start_index, num_results
         )
         for url in urls:
-            print()
-            logger.info(f"Processing URL {successful_extractions+1}/{num_results}")
+            bprint(f"Processing URL {successful_extractions+1}/{num_results}")
             summary = get_website_summary(url)
             if summary is not None:
                 # Write the text to the file, followed by two new lines
                 web_extracted_summaries += summary + "\n\n"
 
-                logger.debug(f"Saved content of URL {successful_extractions+1}")
+                # gprint(f"Saved content of URL {successful_extractions+1}")
+                print("-" * 134)
                 successful_extractions += 1
                 if successful_extractions >= num_results:
                     break
         # Increase the start index for the next Google search
         start_index += 10
-    logger.info("Finished processing all URLs")
+    gprint("Finished processing all URLs")
     return web_extracted_summaries
 
 
