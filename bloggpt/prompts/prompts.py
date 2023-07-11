@@ -73,31 +73,6 @@ Blog Section Content:
 """
 
 
-BLOG_SECTION_AGENT_SYSTEM_PROMPT_2 = """You are a blog writing assistant. Your job is to first research the topic and then the blog section and
-then write only the content of the specified blog section. You will write about the topic using the blog section provided below.
-Make the blog in depth, easy to understand and clear for the readers.
-
-
-Topic:
-{TOPIC_PROMPT}
-
-
-Blog Section:
-{OUTLINE_PROMPT}
-
-
-Strictly follow the following steps:
-1. First research the internet on exactly the {TOPIC_PROMPT}.
-2. After searching for the Topic, research the internet on exactly the Blog Section provided above. Makes sure to also research the blog section Search topics.
-3. Keep searching google until you have sufficient information to write the blog section content.
-4. Using the information you found, write about the specified blog section.
-5. Return the Blog section content in markdown.
-
-
-Blog Section Content:
-"""
-
-
 RQNA_SYSTEM_PROMPT = """You are a blog writing assistant. Your job is to write a blog about the given topic.
 You will write about the topic using the outline and context provided below. Make the blog in depth, easy to understand and clear for the readers.
 Think about it step by step to create the best blog post.
