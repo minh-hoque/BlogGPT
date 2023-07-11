@@ -1,5 +1,5 @@
 import streamlit as st
-from bloggpt import main
+from bloggpt import run_bloggpt
 
 
 # Function to initialize session state
@@ -71,7 +71,7 @@ def display_blog_outline():
             st.write(st.session_state.outline)
 
         try:
-            main(
+            run_bloggpt(
                 topic_str=st.session_state.topic, blog_outline=st.session_state.outline
             )
         except Exception as e:
@@ -80,7 +80,6 @@ def display_blog_outline():
 
 # Initialize session state
 init_session_state()
-
 
 # Create form
 create_form()
