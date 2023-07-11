@@ -160,6 +160,6 @@ cython_debug/
 #.idea/
 
 *.txt
-/outputs
+bloggpt/outputs
 .vscode
 bloggpt.ipynb
