@@ -1,5 +1,7 @@
-# Purpose: Run the bloggpt agent
-# Import necessary libraries
+"""
+This is a module that runs bloggpt as a recurrent data augmented generation chain. It utilizes pinecone as a 
+vector database to store and retrieve documents. It also uses the openai API to generate the blog.
+"""
 import os
 import time
 from pprint import pprint
@@ -231,6 +233,7 @@ def main():
         # text_splitter._disallowed_special = (
         #     text_splitter._tokenizer.special_tokens_set - {"<|endoftext|>"}
         # )
+
         texts = text_splitter.split_text(web_search_texts)
         docsearch = Pinecone.from_texts(
             texts, embeddings, index_name=index_name, namespace=header, batch_size=16
@@ -282,173 +285,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# PUSH_TO_PINECONE = True
-# topic = TOPIC_PROMPT.split(":")[1].strip()
-# print("topic: ", topic)
-
-# headers = []
-# for text in OUTLINE_PROMPT.split("\n"):
-#     if text.startswith("#"):
-#         headers.append(text.split("#")[1].strip())
-# print("headers: ", headers)
-
-# blog_sections = OUTLINE_PROMPT.split("\n\n")
-
-# # initialize pinecone
-# pinecone.init(
-#     api_key=PINECONE_API_KEY,  # find at app.pinecone.io
-#     environment=PINECONE_ENV,  # next to api key in console
-# )
-
-# rprint("Creating VectorDB")
-# index_name = "bloggpt"
-# embeddings = OpenAIEmbeddings()
-
-# if not PUSH_TO_PINECONE:
-#     docsearch = Pinecone.from_existing_index(
-#         embedding=embeddings, index_name=index_name
-#     )
-# else:
-#     if index_name in pinecone.list_indexes():
-#         rprint("Creating New Index")
-
-#         # Delete existing index
-#         pinecone.delete_index("bloggpt")
-
-#         # Create fresh index
-#         pinecone.create_index(
-#             index_name,
-#             dimension=1536,
-#             metric="cosine",
-#             pods=1,
-#         )
-
-# # Wait for the index to become active
-# while True:
-#     # Fetch index info
-#     index_description = pinecone.describe_index(index_name)
-
-#     # Check if the index is Ready
-#     if index_description.status["state"] == "Ready":
-#         bprint(f"The index {index_name} is active and ready.")
-#         break
-#     else:
-#         bprint(
-#             f"The index {index_name} is not active. Current state: {index_description.status['state']}"
-#         )
-#         bprint("Waiting for the index to become active...")
-
-#     # Wait for a while before checking again
-#     time.sleep(5)  # wait for 10 seconds
-
-# num_generated = 0
-# for header, blog_section in zip(headers, blog_sections):
-#     rprint(f"Searching Google for {topic}, {header}")
-#     search_and_extract_web_url(f"{topic}, {header}")
-
-#     with open("outputs/web_search_texts.txt") as f:
-#         state_of_the_union = f.read()
-
-#     text_splitter = TokenTextSplitter(chunk_size=400, chunk_overlap=100)
-#     texts = text_splitter.split_text(state_of_the_union)
-#     docsearch = Pinecone.from_texts(
-#         texts, embeddings, index_name=index_name, namespace=header
-#     )
-
-#     recurrent_rqna_prompt = PromptTemplate(
-#         template=RECURRENT_RQNA_SYSTEM_PROMPT,
-#         input_variables=["context", "topic", "blog_section"],
-#     )
-
-#     chain_type_kwargs = {"prompt": recurrent_rqna_prompt}
-
-#     draft_llm = ChatOpenAI(
-#         model_name="gpt-4-0613",
-#         openai_api_key=OPENAI_API_KEY,
-#     )
-
-#     draft_llm_chain = LLMChain(
-#         llm=draft_llm, prompt=recurrent_rqna_prompt, verbose=True
-#     )
-
-#     # Generate the blog with the agent
-#     rprint("Generating First Draft")
-#     draft_llm_output, retrieved_docs = generate_blog_post(blog_section, header)
-#     print(draft_llm_output["text"])
-
-#     generated_blog = draft_llm_output["text"]
-
-#     save_doc_list_to_file(retrieved_docs, f"outputs/retrieved_docs_{num_generated}.txt")
-
-#     # Save the blog in a markdown file
-#     with open(f"outputs/draft_{num_generated}.md", "w") as f:
-#         f.write(generated_blog)
-
-#     # if num_generated >= 0:
-#     #     break
-#     num_generated += 1
-
-# # Combine the markdown generated blogs into one
-# rprint("Combining the markdown generated blogs into one")
-
-# # Define the directory where the drafts are stored
-# directory = "outputs/"
-
-# # Define the name of the output file
-# output_file = directory + "complete_draft.md"
-
-# # Get a list of all draft files
-# draft_files = [
-#     f for f in os.listdir(directory) if f.startswith("draft_") and f.endswith(".md")
-# ]
-
-# # Sort the files by their number to maintain the order
-# draft_files.sort(key=lambda x: int(x.split("_")[1].split(".")[0]))
-
-# # Initialize an empty string to store the entire draft
-# entire_draft = ""
-
-# # Open the output file in write mode
-# with open(output_file, "w") as outfile:
-#     # Iterate over each draft file
-#     for filename in draft_files:
-#         # Open the draft file in read mode
-#         with open(directory + filename, "r") as infile:
-#             # Read the contents of the draft file
-#             contents = infile.read()
-
-#             # Write the contents of the draft file to the output file
-#             outfile.write(contents)
-
-#             # Add the contents of the draft file to the entire draft string
-#             entire_draft += contents
-
-#             # Add a newline to separate the contents of different draft files
-#             outfile.write("\n\n")
-#             entire_draft += "\n\n"
-
-# gprint(f"All drafts have been combined into {output_file}.")
-
-# refine_llm = ChatOpenAI(
-#     model_name="gpt-4-0613",
-#     temperature=0.5,
-#     openai_api_key=OPENAI_API_KEY,
-# )
-
-# prompt = PromptTemplate.from_template(REWRITE_PROMPT)
-# refine_llm_chain = LLMChain(llm=refine_llm, prompt=prompt)
-
-# # Refine the generated blog
-# rprint("Refining the blog")
-
-# final_blog = refine_llm_chain(
-#     inputs={"generated_blog": entire_draft, "TOPIC_PROMPT": TOPIC_PROMPT},
-#     return_only_outputs=True,
-# )
-# print(final_blog["text"])
-
-# # Save the blog in a markdown file
-# with open("outputs/blog.md", "w") as f:
-#     f.write(final_blog["text"])
