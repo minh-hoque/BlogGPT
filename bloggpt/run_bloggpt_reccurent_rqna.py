@@ -1,5 +1,5 @@
 """
-This is a module that runs bloggpt as a recurrent data augmented generation chain. It utilizes pinecone as a 
+This is a module that runs bloggpt as a recurrent RAG (retrieval augmented generation) chain. It utilizes pinecone as a 
 vector database to store and retrieve documents. It also uses the openai API to generate the blog.
 """
 import os
