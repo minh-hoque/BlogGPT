@@ -98,6 +98,8 @@ For a detailed walkthrough of how to use the BlogGPT module, check out this:
 
 ![video tutorial](/assets/bloggpt_run_110723_final.gif)
 
+You can check out the blog that was generated from this demo [here](https://medium.com/@minh.hoque/exploring-the-falcon-llm-the-new-king-of-the-jungle-5c6a15b91159).
+
 ## Contributing
 
 Contributions to BlogGPT are welcome! No guidelines for now... just open a PR and we'll figure it out.
