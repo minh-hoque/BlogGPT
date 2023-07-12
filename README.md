@@ -49,6 +49,21 @@ Copy the `.env.template` file to `.env` and fill in the appropriate values:
 cp .env.template .env
 ```
 
+### OpenAI API Key
+
+This project uses the OpenAI API, which requires an API key. Here's how you can get this key:
+
+1. Go to the OpenAI website (https://www.openai.com/).
+
+2. If you haven't already, sign up for an account.
+
+3. After logging in, navigate to the API section. 
+
+4. You will find your API key in this section. Copy this key - you'll need to provide it as the value for `OPENAI_API_KEY` in the `.env` file.
+
+Please ensure that you keep this key secure and do not share it with anyone. Also, be aware of the usage costs associated with the OpenAI API.
+
+
 ### Google Search Configuration
 
 This project uses the Google Custom Search JSON API which requires the setup of a Programmable Search Engine. Here's how you can get these credentials:
