@@ -109,7 +109,7 @@ You will have to fill up a few text boxes before generating the blog draft. The 
 
 ## Demo
 
-For a detailed walkthrough of how to use the BlogGPT module, check out this:
+For a detailed walkthrough of how to use the BlogGPT module, check out this video:
 
 ![video tutorial](/assets/bloggpt_run_110723_final.gif)
 
