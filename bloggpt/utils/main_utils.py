@@ -70,7 +70,7 @@ def generate_final_blog(entire_draft, TOPIC_PROMPT, OPENAI_API_KEY):
     )
 
     # Save the blog in a markdown file
-    with open("outputs/blog.md", "w") as f:
+    with open("bloggpt/outputs/blog.md", "w") as f:
         f.write(final_blog["text"])
 
     return final_blog["text"]

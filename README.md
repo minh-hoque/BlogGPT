@@ -93,9 +93,9 @@ This project uses the Google Custom Search JSON API which requires the setup of 
 *You can follow the following [blog](https://blog.expertrec.com/google-custom-search-json-api-simplified/) for more detailed steps*
 
 ## Usage
-To use the module, you need to run the Streamlit app:
+To use the module, you need to run the Streamlit app (make sure to be in the root directory):
 ```bash
-streamlit run app.py
+streamlit run bloggpt/main.py
 ```
 
 ### Usage (Streamlit)
